@@ -1,0 +1,128 @@
+.skills-single-div {
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    background: white;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.skills-single-div::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--highlight));
+}
+
+.skills-single-div:hover {
+    border-color: rgba(37, 99, 235, 0.3);
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.08);
+}
+
+.skills-content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+}
+
+.skill-category {
+    flex: 1 1 300px;
+}
+
+.skill-category-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--font-heading);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.skill-category-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill-tag {
+    padding: 6px 12px;
+    border: 1px solid;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg);
+    transition: var(--transition);
+    cursor: default;
+}
+
+.skill-tag:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+    .skills-single-div {
+        padding: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .skills-single-div {
+        padding: 24px;
+    }
+
+    .skill-category {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .skills-single-div {
+        padding: 20px;
+    }
+
+    .skills-content-wrapper {
+        gap: 24px;
+    }
+
+    .skill-category-icon {
+        font-size: 20px;
+    }
+
+    .skill-category-title {
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+}
+
+@media (max-width: 360px) {
+    .skills-single-div {
+        padding: 16px;
+    }
+
+    .skills-content-wrapper {
+        gap: 20px;
+    }
+
+    .skill-tag {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+}

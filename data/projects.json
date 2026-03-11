@@ -1,0 +1,53 @@
+[
+  {
+    "id": "1",
+    "title": "iNotebook",
+    "subtitle": "Secure Notes Application",
+    "description": "Built a full-stack MERN notes application with secure JWT authentication and protected routes. Developed RESTful APIs enabling complete CRUD operations for user notes.",
+    "tech": ["MongoDB", "Express.js", "React.js", "Node.js", "JWT"],
+    "github": "https://github.com/rahull2509/iNotebook-React",
+    "live": "",
+    "excalidrawScene": null,
+    "date": "Sep 2025",
+    "highlights": [
+      "Secure JWT authentication & protected routes",
+      "RESTful APIs with full CRUD operations",
+      "Context API for state management"
+    ],
+    "color": "purple"
+  },
+  {
+    "id": "2",
+    "title": "E-Commerce Web App",
+    "subtitle": "Responsive Shopping Platform",
+    "description": "Built a responsive e-commerce platform supporting product browsing, filtering, search, shopping cart and checkout flow with user authentication.",
+    "tech": ["React.js", "JavaScript", "REST APIs", "CSS3"],
+    "github": "https://github.com/rahull2509/e-commerce-website.git",
+    "live": "",
+    "excalidrawScene": null,
+    "date": "Oct 2025",
+    "highlights": [
+      "Product browsing, filtering & search",
+      "Shopping cart & checkout flow",
+      "Lazy loading & optimized rendering"
+    ],
+    "color": "cyan"
+  },
+  {
+    "id": "3",
+    "title": "Newsly",
+    "subtitle": "News Aggregator Application",
+    "description": "Developed a news aggregator with category-based filtering, infinite scrolling, and external API integration with proper error handling and loading states.",
+    "tech": ["React.js", "TypeScript", "News API", "Tailwind CSS"],
+    "github": "https://github.com/rahull2509/Newsly-React",
+    "live": "",
+    "excalidrawScene": null,
+    "date": "Nov 2025",
+    "highlights": [
+      "Category-based filtering & infinite scroll",
+      "External API integration with error handling",
+      "Responsive UI for improved readability"
+    ],
+    "color": "pink"
+  }
+]
