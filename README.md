@@ -2,7 +2,7 @@
 
 A modern, responsive developer portfolio built with **Next.js 16**, **React 19**, and **Framer Motion**. Features smooth scroll animations, an admin dashboard, project detail pages with Excalidraw architecture diagrams, and a fully responsive design across all devices.
 
-🔗 **Live:** [rahulgangwar.vercel.app](https://rahull2509.vercel.app)
+🔗 **Live:** [rahull2509.vercel.app](https://rahull2509.vercel.app)
 
 ---
 
@@ -151,7 +151,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 🤝 Contact
 
 - **Email:** rahulgangwar2625@gmail.com
-- **LinkedIn:** https://www.linkedin.com/in/rahullgangwar/](https://www.linkedin.com/in/rahullgangwar/)
+- **LinkedIn:** [https://www.linkedin.com/in/rahullgangwar/](https://www.linkedin.com/in/rahullgangwar/)
 - **GitHub:** [github.com/rahull2509](https://github.com/rahull2509)
 
 ---
