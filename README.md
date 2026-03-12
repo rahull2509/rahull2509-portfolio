@@ -151,7 +151,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 🤝 Contact
 
 - **Email:** rahulgangwar2625@gmail.com
-- **LinkedIn:** [linkedin.com/in/rahul-gangwar-b7b1b42a0](https://linkedin.com/in/rahul-gangwar-b7b1b42a0)
+- **LinkedIn:** https://www.linkedin.com/in/rahullgangwar/](https://www.linkedin.com/in/rahullgangwar/)
 - **GitHub:** [github.com/rahull2509](https://github.com/rahull2509)
 
 ---
