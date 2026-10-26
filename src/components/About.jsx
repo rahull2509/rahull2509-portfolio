@@ -43,7 +43,7 @@ export default function About() {
                         Building Modern <span className="grad-text">Web Apps</span>
                     </h2>
                     <p className="section-desc">
-                        Full-stack developer passionate about modern JavaScript ecosystems and responsive web design
+                        Full-stack developer building scalable products across frontend, backend, data, and deployment.
                     </p>
                 </motion.div>
 
@@ -85,13 +85,13 @@ export default function About() {
                         
                         <div className="about-description">
                             <p>
-                                Full-stack developer specializing in modern JavaScript ecosystems with hands-on experience building scalable web applications using React.js, Next.js, Node.js, and MongoDB/PostgreSQL.
+                                Full-stack developer with hands-on experience building scalable web applications using React.js, Next.js, Node.js, TypeScript, MongoDB, and PostgreSQL.
                             </p>
                             <p>
-                                Experienced in designing REST APIs, implementing secure authentication systems with JWT, and building responsive user interfaces. Recently contributed to a production startup project involving large-scale React to Next.js migration.
+                                Experienced in REST API development, authentication systems, real-time applications, Prisma ORM, database design, and modern deployment workflows. I enjoy solving real-world problems through reliable, responsive products.
                             </p>
                             <p>
-                                Currently pursuing B.Tech in Computer Science at Dr. A.P.J. Abdul Kalam Technical University. Passionate about writing clean, maintainable code and solving real-world problems through technology.
+                                Currently pursuing a B.Tech in Computer Science at Dr. A.P.J. Abdul Kalam Technical University, with a 7.15/10 CGPA. I have built and deployed 15+ full-stack applications and enjoy collaborating in agile teams.
                             </p>
                         </div>
 

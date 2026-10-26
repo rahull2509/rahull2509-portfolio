@@ -153,13 +153,13 @@ export default function Contact() {
                                     </div>
                                 </a>
 
-                                {/* <a href="tel:+9199XXXXXXXX" className="info-item">
+                                {/* <a href="tel:+91" className="info-item">
                                     <div className="info-icon">
                                         <Phone size={20} />
                                     </div>
                                     <div>
                                         <div className="info-label">Phone</div>
-                                        <div className="info-value">+91 99XXXXXXXX</div>
+                                        <div className="info-value">+91 </div>
                                     </div>
                                 </a> */}
 

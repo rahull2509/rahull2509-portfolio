@@ -32,7 +32,7 @@ export default function Hero() {
                         </h2>
 
                         <p className="hero-description">
-                            Full-stack developer specializing in modern JavaScript ecosystems — React.js, Next.js, Node.js, and MongoDB/PostgreSQL. Passionate about building scalable web applications and writing clean, maintainable code.
+                            Full-Stack Developer with experience across React.js, Next.js, Node.js, TypeScript, Python, MongoDB, and PostgreSQL. I build scalable products, real-time systems, secure APIs, and responsive interfaces.
                         </p>
 
                         <div className="hero-actions">

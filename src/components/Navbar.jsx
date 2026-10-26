@@ -9,6 +9,8 @@ import './Navbar.css';
 
 const links = [
     { to: '#about', label: 'About' },
+    { to: '#experience', label: 'Experience' },
+    { to: '#skills', label: 'Skills' },
     { to: '#projects', label: 'Projects' },
     { to: '#contact', label: 'Contact' },
 ];

@@ -6,10 +6,26 @@ import './Experience.css';
 
 const experiences = [
     {
-        company: 'VerifyDev (Startup Project)',
+        company: 'SwitchYourVendor',
+        role: 'Full Stack Developer',
+        location: 'Remote · Gurugram, Haryana, India',
+        period: 'Jun 2026 – Present',
+        color: 'cyan',
+        bullets: [
+            'Built MarketPulse, a full-stack SaaS platform for real-time market analytics, stock screening, historical analysis, and trading insights.',
+            'Developed interactive market dashboards with Next.js, React, TypeScript, Tailwind CSS, Zustand, and TanStack Query/Table/Virtual.',
+            'Engineered FastAPI backend services with PostgreSQL, SQLAlchemy, Redis, Pandas, DuckDB, Apache Parquet, PyArrow, and AWS S3.',
+            'Implemented Upstox live-market data pipelines with APScheduler, Selenium/PyOTP, Redis, snapshot diff detection, delta updates, and WebSockets.',
+            'Built a custom scanner engine with expression parsing, AST conditions, DuckDB SQL translation, historical/live modes, presets, saved queries, and subscription entitlements.',
+            'Implemented Google, Upstox, and Zerodha OAuth, secure sessions, Razorpay billing, webhook verification, admin dashboards, audit logs, and support workflows.',
+        ],
+        tags: ['Next.js', 'React', 'TypeScript', 'Python', 'FastAPI', 'PostgreSQL', 'Redis', 'WebSockets', 'AWS S3'],
+    },
+    {
+        company: 'VerifyDev (Project)',
         role: 'Software Developer',
         location: 'Remote',
-        period: 'Jan 2026 – Present',
+        period: 'Jan 2026 – Mar 2026',
         color: 'purple',
         bullets: [
             'Led migration of production application from React.js to Next.js, refactoring 200+ files to implement improved routing and architecture.',
@@ -18,7 +34,7 @@ const experiences = [
             'Collaborated with developers to fix production bugs and improve UI/UX across frontend repositories.',
             'Worked in an agile startup environment using Git workflows, feature branching, and continuous improvements.',
         ],
-        tags: ['React.js', 'Next.js', 'Node.js', 'Git', 'SSR'],
+        tags: ['React.js', 'Next.js', 'SSR', 'Git', 'Code Reviews'],
     },
 ];
 
@@ -109,9 +125,9 @@ export default function Experience() {
                     <div className="edu-icon">🎓</div>
                     <div className="edu-body">
                         <h3>Dr. A.P.J. Abdul Kalam Technical University</h3>
-                        <p>Bachelor of Technology in Computer Science</p>
+                        <p>Bachelor of Technology in Computer Science · CGPA: 7.15/10.0</p>
                         <div className="edu-meta">
-                            <span><MapPin size={13} /> Lucknow, India</span>
+                            <span><MapPin size={13} /> Dr. A.P.J. Abdul Kalam Technical University</span>
                             <span><Calendar size={13} /> 2023 – 2027</span>
                         </div>
                     </div>

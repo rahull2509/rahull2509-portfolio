@@ -39,13 +39,24 @@ export async function GET(request) {
       }
       case 'repos': {
         const data = await fetchGitHub(
-          `/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`
+          `/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`
         );
-        return NextResponse.json(data);
+        const ownRepos = data.filter(repo => !repo.fork);
+        const totalStars = ownRepos.reduce(
+          (total, repo) => total + (repo.stargazers_count || 0),
+          0
+        );
+        return NextResponse.json({ repos: data, totalStars });
+      }
+      case 'prs': {
+        const data = await fetchGitHub(
+          `/search/issues?q=author%3A${GITHUB_USERNAME}+is%3Apr&per_page=1`
+        );
+        return NextResponse.json({ total_count: data.total_count || 0 });
       }
       case 'events': {
         const data = await fetchGitHub(
-          `/users/${GITHUB_USERNAME}/events/public?per_page=10`
+          `/users/${GITHUB_USERNAME}/events/public?per_page=100`
         );
         return NextResponse.json(data);
       }

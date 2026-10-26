@@ -1,53 +1,36 @@
 [
   {
     "id": "1",
-    "title": "iNotebook",
-    "subtitle": "Secure Notes Application",
-    "description": "Built a full-stack MERN notes application with secure JWT authentication and protected routes. Developed RESTful APIs enabling complete CRUD operations for user notes.",
-    "tech": ["MongoDB", "Express.js", "React.js", "Node.js", "JWT"],
-    "github": "https://github.com/rahull2509/iNotebook-React",
+    "title": "Krishi Fair",
+    "subtitle": "AI-Powered Agricultural Marketplace",
+    "description": "A full-stack agricultural marketplace with AI crop advisory, live mandi and weather insights, automated auctions, and image management.",
+    "tech": ["JavaScript", "React.js", "Node.js", "Express.js", "MongoDB", "Prisma ORM", "Gemini AI", "Cloudinary"],
     "live": "",
     "excalidrawScene": null,
-    "date": "Sep 2025",
+    "date": "Mar 2026",
     "highlights": [
-      "Secure JWT authentication & protected routes",
-      "RESTful APIs with full CRUD operations",
-      "Context API for state management"
+      "Context-aware Google Gemini chatbot for crop advisory and pest management",
+      "Government Mandi and Weather APIs with caching for live agricultural insights",
+      "Node-Cron auction expiry, winner declaration, and idempotent bid processing",
+      "Cloudinary multipart uploads with CDN optimization and image transformations"
     ],
-    "color": "purple"
+    "color": "emerald"
   },
   {
     "id": "2",
-    "title": "E-Commerce Web App",
-    "subtitle": "Responsive Shopping Platform",
-    "description": "Built a responsive e-commerce platform supporting product browsing, filtering, search, shopping cart and checkout flow with user authentication.",
-    "tech": ["React.js", "JavaScript", "REST APIs", "CSS3"],
-    "github": "https://github.com/rahull2509/e-commerce-website.git",
+    "title": "Weather Dashboard",
+    "subtitle": "Real-Time Weather Application",
+    "description": "A responsive weather dashboard providing live conditions, five-day forecasts, location search, and adaptive day/night weather experiences.",
+    "tech": ["React.js", "TypeScript", "OpenWeatherMap API", "Geolocation API", "CSS3"],
     "live": "",
     "excalidrawScene": null,
     "date": "Oct 2025",
     "highlights": [
-      "Product browsing, filtering & search",
-      "Shopping cart & checkout flow",
-      "Lazy loading & optimized rendering"
+      "Real-time conditions and five-day forecasts",
+      "Sunrise/sunset-based day and night detection",
+      "Browser geolocation, city search, loading states, and error handling",
+      "Modular TypeScript components with animated weather-specific UI"
     ],
     "color": "cyan"
-  },
-  {
-    "id": "3",
-    "title": "Newsly",
-    "subtitle": "News Aggregator Application",
-    "description": "Developed a news aggregator with category-based filtering, infinite scrolling, and external API integration with proper error handling and loading states.",
-    "tech": ["React.js", "TypeScript", "News API", "Tailwind CSS"],
-    "github": "https://github.com/rahull2509/Newsly-React",
-    "live": "",
-    "excalidrawScene": null,
-    "date": "Nov 2025",
-    "highlights": [
-      "Category-based filtering & infinite scroll",
-      "External API integration with error handling",
-      "Responsive UI for improved readability"
-    ],
-    "color": "pink"
   }
 ]

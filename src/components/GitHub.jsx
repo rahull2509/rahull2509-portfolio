@@ -160,6 +160,7 @@ export default function GitHub() {
     const [langs, setLangs] = useState({});
     const [loading, setLoading] = useState(true);
     const [totalStars, setTotalStars] = useState(0);
+    const [prCount, setPrCount] = useState(0);
 
     // Lazy-load data only when section scrolls into view (once)
     useEffect(() => {
@@ -167,25 +168,29 @@ export default function GitHub() {
 
         async function load() {
             try {
-                const [profileRes, reposRes, eventsRes] = await Promise.all([
+                const [profileRes, reposRes, eventsRes, prsRes] = await Promise.all([
                     fetch('/api/github?type=profile'),
                     fetch('/api/github?type=repos'),
                     fetch('/api/github?type=events'),
+                    fetch('/api/github?type=prs'),
                 ]);
 
-                const [profileData, reposData, eventsData] = await Promise.all([
+                const [profileData, reposData, eventsData, prsData] = await Promise.all([
                     profileRes.json(),
                     reposRes.json(),
                     eventsRes.json(),
+                    prsRes.json(),
                 ]);
 
                 if (cancelled) return;
 
                 setProfile(profileData);
+                setPrCount(Number(prsData?.total_count) || 0);
 
-                const ownRepos = Array.isArray(reposData) ? reposData.filter(r => !r.fork) : [];
+                const allRepos = Array.isArray(reposData?.repos) ? reposData.repos : [];
+                const ownRepos = allRepos.filter(r => !r.fork);
                 setRepos(ownRepos.sort((a, b) => b.stargazers_count - a.stargazers_count).slice(0, 6));
-                setTotalStars((Array.isArray(reposData) ? reposData : []).reduce((s, r) => s + r.stargazers_count, 0));
+                setTotalStars(Number(reposData?.totalStars) || 0);
 
                 const meaningful = (Array.isArray(eventsData) ? eventsData : []).filter(e =>
                     ['PushEvent', 'PullRequestEvent', 'CreateEvent', 'ForkEvent'].includes(e.type)
@@ -220,7 +225,6 @@ export default function GitHub() {
         return () => { cancelled = true; observer.disconnect(); };
     }, []);
 
-    const prCount = events.filter(e => e.type === 'PullRequestEvent').length;
     const pushCount = events.filter(e => e.type === 'PushEvent').length;
 
     return (
@@ -281,9 +285,9 @@ export default function GitHub() {
                             <div className="gh-stats-row">
                                 <StatBadge icon={BookOpen} value={profile?.public_repos} label="Repos" />
                                 <StatBadge icon={Users} value={profile?.followers} label="Followers" />
-                                <StatBadge icon={Star} value={totalStars} label="Stars" />
-                                <StatBadge icon={GitPullRequest} value={prCount + '+'} label="PRs" />
-                                <StatBadge icon={GitCommit} value={pushCount + '+'} label="Pushes" />
+                                <StatBadge icon={Star} value={totalStars} label="Stars Received" />
+                                <StatBadge icon={GitPullRequest} value={prCount} label="PRs" />
+                                <StatBadge icon={GitCommit} value={pushCount} label="Recent Pushes" />
                             </div>
                         </motion.div>
 
