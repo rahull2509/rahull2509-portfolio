@@ -9,7 +9,7 @@ const experiences = [
         company: 'SwitchYourVendor',
         role: 'Full Stack Developer',
         location: 'Remote · Gurugram, Haryana, India',
-        period: 'Jun 2026 – Present',
+        period: 'Jun 2026 – Sep 2026',
         color: 'cyan',
         bullets: [
             'Built MarketPulse, a full-stack SaaS platform for real-time market analytics, stock screening, historical analysis, and trading insights.',
