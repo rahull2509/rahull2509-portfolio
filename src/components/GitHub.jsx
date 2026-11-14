@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     Github, Star, GitFork, Users, BookOpen,
     GitPullRequest, GitCommit, GitBranch, ExternalLink,
-    Code2, Zap, Calendar
+    Code2, Zap, Calendar, RefreshCw, AlertCircle
 } from 'lucide-react';
 import './GitHub.css';
 
@@ -17,33 +17,121 @@ const LANG_COLOR = {
     JavaScript: '#f1e05a',
     Go: '#00add8',
     'C++': '#f34b7d',
+    'C#': '#178600',
     Python: '#3572A5',
     HTML: '#e34c26',
     CSS: '#563d7c',
+    Java: '#b07219',
+    Rust: '#dea584',
+    Shell: '#89e051',
+    PHP: '#4F5D95',
+    Kotlin: '#A97BFF',
+    Swift: '#F05138',
 };
 
-function SkeletonCard({ h = 120 }) {
+/**
+ * Pure relative time formatter that does not invoke impure Date.now() during render
+ */
+function formatTimeAgo(dateStr, baseTimestamp) {
+    if (!dateStr) return '';
+    const dateMs = new Date(dateStr).getTime();
+    const now = baseTimestamp || dateMs;
+    const diff = Math.max(0, (now - dateMs) / 1000);
+
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+}
+
+// ── Layout-Matching Skeletons (Zero CLS) ─────────────────────────────────────
+
+function GitHubSkeleton() {
     return (
-        <div className="gh-skeleton" style={{ height: h }}>
-            <div className="sk-line" />
-            <div className="sk-line short" />
+        <div className="gh-skeleton-container" aria-busy="true" aria-label="Loading GitHub data">
+            {/* Profile skeleton */}
+            <div className="gh-profile-card">
+                <div className="gh-profile-left">
+                    <div className="sk-avatar" />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 200 }}>
+                        <div className="sk-line" style={{ width: 160, height: 24 }} />
+                        <div className="sk-line short" style={{ width: 110, height: 18 }} />
+                        <div className="sk-line" style={{ width: 260, height: 14 }} />
+                    </div>
+                </div>
+                <div className="gh-stats-row">
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <div key={i} className="gh-stat-badge" style={{ minWidth: 100, height: 86 }}>
+                            <div className="sk-line" style={{ width: 36, height: 18 }} />
+                            <div className="sk-line" style={{ width: 48, height: 12 }} />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Contribution graph skeleton */}
+            <div className="gh-contrib-card">
+                <div className="gh-card-head"><Calendar size={14} /> Contribution Graph</div>
+                <div className="gh-contrib-wrap" style={{ minHeight: 160 }}>
+                    <div className="sk-box" style={{ width: '100%', height: 130 }} />
+                </div>
+            </div>
+
+            {/* Two-column skeleton */}
+            <div className="gh-two-col">
+                <div className="gh-card">
+                    <div className="gh-section-label"><Code2 size={13} /> Languages</div>
+                    <div className="sk-box" style={{ width: '100%', height: 14, borderRadius: 100, marginBottom: 24 }} />
+                    <div className="gh-lang-legend">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="sk-box" style={{ height: 32 }} />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="gh-card">
+                    <div className="gh-section-label"><Zap size={13} /> Recent Activity</div>
+                    <div className="gh-activity-feed">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="sk-box" style={{ height: 60 }} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Repositories grid skeleton */}
+            <div>
+                <div className="gh-section-label mt"><Star size={13} /> Top Repositories</div>
+                <div className="gh-repos-grid">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="gh-repo-card" style={{ minHeight: 180 }}>
+                            <div className="sk-line" style={{ width: '50%', height: 20, marginBottom: 12 }} />
+                            <div className="sk-line" style={{ width: '90%', height: 14, marginBottom: 8 }} />
+                            <div className="sk-line short" style={{ width: '60%', height: 14, marginBottom: 20 }} />
+                            <div className="sk-line" style={{ width: '40%', height: 12, marginTop: 'auto' }} />
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
 
 function StatBadge({ icon: Icon, value, label }) {
     return (
-        <div className="gh-stat-badge">
+        <div className="gh-stat-badge" title={`${label}: ${value ?? 0}`}>
             <Icon size={16} className="gh-stat-icon" />
-            <span className="gh-stat-val">{value}</span>
+            <span className="gh-stat-val">{value ?? 0}</span>
             <span className="gh-stat-lbl">{label}</span>
         </div>
     );
 }
 
 function LangBar({ langs }) {
+    const [hoveredLang, setHoveredLang] = useState(null);
     if (!langs || Object.keys(langs).length === 0) return null;
     const total = Object.values(langs).reduce((a, b) => a + b, 0);
+    if (total === 0) return null;
+
     const sorted = Object.entries(langs)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 7);
@@ -52,26 +140,43 @@ function LangBar({ langs }) {
         <div className="gh-lang-section">
             <div className="gh-section-label"><Code2 size={13} /> Languages</div>
             <div className="gh-lang-bar">
-                {sorted.map(([lang, bytes]) => (
-                    <div
-                        key={lang}
-                        className="gh-lang-segment"
-                        style={{
-                            width: `${(bytes / total) * 100}%`,
-                            background: LANG_COLOR[lang] || '#94a3b8',
-                        }}
-                        title={`${lang}: ${((bytes / total) * 100).toFixed(1)}%`}
-                    />
-                ))}
+                {sorted.map(([lang, bytes]) => {
+                    const isHovered = hoveredLang === lang;
+                    const isDimmed = hoveredLang && hoveredLang !== lang;
+                    const pct = ((bytes / total) * 100).toFixed(1);
+                    return (
+                        <div
+                            key={lang}
+                            className={`gh-lang-segment ${isHovered ? 'active' : ''} ${isDimmed ? 'dimmed' : ''}`}
+                            style={{
+                                width: `${pct}%`,
+                                background: LANG_COLOR[lang] || '#94a3b8',
+                            }}
+                            title={`${lang}: ${pct}%`}
+                            onMouseEnter={() => setHoveredLang(lang)}
+                            onMouseLeave={() => setHoveredLang(null)}
+                        />
+                    );
+                })}
             </div>
             <div className="gh-lang-legend">
-                {sorted.map(([lang, bytes]) => (
-                    <div key={lang} className="gh-lang-item">
-                        <span className="gh-lang-dot" style={{ background: LANG_COLOR[lang] || '#94a3b8' }} />
-                        <span className="gh-lang-name">{lang}</span>
-                        <span className="gh-lang-pct">{((bytes / total) * 100).toFixed(1)}%</span>
-                    </div>
-                ))}
+                {sorted.map(([lang, bytes]) => {
+                    const isHovered = hoveredLang === lang;
+                    const isDimmed = hoveredLang && hoveredLang !== lang;
+                    const pct = ((bytes / total) * 100).toFixed(1);
+                    return (
+                        <div
+                            key={lang}
+                            className={`gh-lang-item ${isHovered ? 'active' : ''} ${isDimmed ? 'dimmed' : ''}`}
+                            onMouseEnter={() => setHoveredLang(lang)}
+                            onMouseLeave={() => setHoveredLang(null)}
+                        >
+                            <span className="gh-lang-dot" style={{ background: LANG_COLOR[lang] || '#94a3b8' }} />
+                            <span className="gh-lang-name">{lang}</span>
+                            <span className="gh-lang-pct">{pct}%</span>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
@@ -84,15 +189,14 @@ function RepoCard({ repo }) {
             target="_blank"
             rel="noopener noreferrer"
             className="gh-repo-card"
+            title={`View ${repo.name} on GitHub`}
         >
             <div className="gh-repo-header">
                 <BookOpen size={13} className="gh-repo-icon" />
                 <span className="gh-repo-name">{repo.name}</span>
                 <ExternalLink size={11} className="gh-repo-ext" />
             </div>
-            {repo.description && (
-                <p className="gh-repo-desc">{repo.description}</p>
-            )}
+            <p className="gh-repo-desc">{repo.description || 'No description provided.'}</p>
             <div className="gh-repo-footer">
                 {repo.language && (
                     <span className="gh-repo-lang">
@@ -100,21 +204,14 @@ function RepoCard({ repo }) {
                         {repo.language}
                     </span>
                 )}
-                <span className="gh-repo-stars"><Star size={11} /> {repo.stargazers_count}</span>
-                <span className="gh-repo-forks"><GitFork size={11} /> {repo.forks_count}</span>
+                <span className="gh-repo-stars"><Star size={11} /> {repo.stargazers_count || 0}</span>
+                <span className="gh-repo-forks"><GitFork size={11} /> {repo.forks_count || 0}</span>
             </div>
         </a>
     );
 }
 
-function ActivityItem({ event }) {
-    const ago = (dateStr) => {
-        const diff = (Date.now() - new Date(dateStr)) / 1000;
-        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-        return `${Math.floor(diff / 86400)}d ago`;
-    };
-
+function ActivityItem({ event, baseTime }) {
     const iconMap = {
         PushEvent: <GitCommit size={13} />,
         PullRequestEvent: <GitPullRequest size={13} />,
@@ -124,7 +221,7 @@ function ActivityItem({ event }) {
 
     const labelMap = {
         PushEvent: 'Pushed to',
-        PullRequestEvent: (e) => `PR #${e.payload?.number} ${e.payload?.action}`,
+        PullRequestEvent: (e) => `PR #${e.payload?.number || ''} ${e.payload?.action || ''}`,
         CreateEvent: 'Created branch in',
         ForkEvent: 'Forked',
     };
@@ -133,8 +230,9 @@ function ActivityItem({ event }) {
         ? labelMap[event.type](event)
         : (labelMap[event.type] || event.type.replace('Event', ''));
 
-    const repoName = event.repo.name.split('/')[1];
-    const repoUrl = `https://github.com/${event.repo.name}`;
+    const repoName = event.repo?.name ? event.repo.name.split('/')[1] : 'repo';
+    const repoUrl = `https://github.com/${event.repo?.name || USERNAME}`;
+    const commitMsg = event.payload?.commits?.[0]?.message;
 
     return (
         <div className="gh-activity-item">
@@ -142,12 +240,19 @@ function ActivityItem({ event }) {
                 {iconMap[event.type] || <Zap size={13} />}
             </div>
             <div className="gh-act-body">
-                <span className="gh-act-label">{label}</span>{' '}
-                <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gh-act-repo">
-                    {repoName}
-                </a>
+                <div>
+                    <span className="gh-act-label">{label}</span>{' '}
+                    <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gh-act-repo">
+                        {repoName}
+                    </a>
+                </div>
+                {commitMsg && (
+                    <div className="gh-act-msg" title={commitMsg}>
+                        &ldquo;{commitMsg.length > 55 ? `${commitMsg.slice(0, 55)}…` : commitMsg}&rdquo;
+                    </div>
+                )}
             </div>
-            <span className="gh-act-time">{ago(event.created_at)}</span>
+            <span className="gh-act-time">{formatTimeAgo(event.created_at, baseTime)}</span>
         </div>
     );
 }
@@ -158,72 +263,85 @@ export default function GitHub() {
     const [repos, setRepos] = useState([]);
     const [events, setEvents] = useState([]);
     const [langs, setLangs] = useState({});
-    const [loading, setLoading] = useState(true);
     const [totalStars, setTotalStars] = useState(0);
     const [prCount, setPrCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [loadedAt, setLoadedAt] = useState(null);
 
-    // Lazy-load data only when section scrolls into view (once)
-    useEffect(() => {
-        let cancelled = false;
+    // Optimized consolidated fetch (single request to server-cached bundle)
+    const loadData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
-        async function load() {
-            try {
-                const [profileRes, reposRes, eventsRes, prsRes] = await Promise.all([
-                    fetch('/api/github?type=profile'),
-                    fetch('/api/github?type=repos'),
-                    fetch('/api/github?type=events'),
-                    fetch('/api/github?type=prs'),
-                ]);
+        try {
+            const res = await fetch('/api/github?type=all');
+            if (!res.ok) {
+                throw new Error(`API returned status ${res.status}`);
+            }
 
-                const [profileData, reposData, eventsData, prsData] = await Promise.all([
-                    profileRes.json(),
-                    reposRes.json(),
-                    eventsRes.json(),
-                    prsRes.json(),
-                ]);
+            const data = await res.json();
+            const now = Date.now();
+            setLoadedAt(now);
 
-                if (cancelled) return;
+            // Populate state from consolidated response
+            setProfile(data.profile || null);
+            setPrCount(Number(data.prCount) || 0);
+            setTotalStars(Number(data.totalStars) || 0);
 
-                setProfile(profileData);
-                setPrCount(Number(prsData?.total_count) || 0);
+            // Top repos
+            if (Array.isArray(data.topRepos)) {
+                setRepos(data.topRepos);
+            } else if (Array.isArray(data.repos)) {
+                const own = data.repos.filter(r => !r.fork);
+                setRepos(own.sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0)).slice(0, 6));
+            }
 
-                const allRepos = Array.isArray(reposData?.repos) ? reposData.repos : [];
-                const ownRepos = allRepos.filter(r => !r.fork);
-                setRepos(ownRepos.sort((a, b) => b.stargazers_count - a.stargazers_count).slice(0, 6));
-                setTotalStars(Number(reposData?.totalStars) || 0);
+            // Events
+            if (Array.isArray(data.events)) {
+                setEvents(data.events);
+            }
 
-                const meaningful = (Array.isArray(eventsData) ? eventsData : []).filter(e =>
-                    ['PushEvent', 'PullRequestEvent', 'CreateEvent', 'ForkEvent'].includes(e.type)
-                ).slice(0, 8);
-                setEvents(meaningful);
-
-                const langRepos = ownRepos.filter(r => r.language).slice(0, 15);
+            // Languages: prefer server-aggregated stats, fallback to client computation
+            if (data.langs && Object.keys(data.langs).length > 0) {
+                setLangs(data.langs);
+            } else if (Array.isArray(data.repos)) {
                 const langTotals = {};
-                langRepos.forEach(r => {
-                    if (r.language) langTotals[r.language] = (langTotals[r.language] || 0) + r.size;
+                data.repos.filter(r => !r.fork && r.language).slice(0, 15).forEach(r => {
+                    langTotals[r.language] = (langTotals[r.language] || 0) + (r.size || 1);
                 });
                 setLangs(langTotals);
-
-            } catch (err) {
-                console.error('GitHub section error:', err);
-            } finally {
-                if (!cancelled) setLoading(false);
             }
+        } catch (err) {
+            console.error('GitHub section error:', err);
+            setError(err.message || 'Failed to load GitHub data');
+        } finally {
+            setLoading(false);
         }
+    }, []);
+
+    // Lazy-load data when section scrolls into view
+    useEffect(() => {
+        let active = true;
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    load();
+                if (entry.isIntersecting && active) {
+                    loadData();
                     observer.disconnect();
                 }
             },
             { threshold: 0.1 }
         );
 
-        if (sectionRef.current) observer.observe(sectionRef.current);
-        return () => { cancelled = true; observer.disconnect(); };
-    }, []);
+        const currentRef = sectionRef.current;
+        if (currentRef) observer.observe(currentRef);
+
+        return () => {
+            active = false;
+            if (currentRef) observer.disconnect();
+        };
+    }, [loadData]);
 
     const pushCount = events.filter(e => e.type === 'PushEvent').length;
 
@@ -247,10 +365,14 @@ export default function GitHub() {
                 </motion.div>
 
                 {loading ? (
-                    <div className="gh-loading-grid">
-                        <SkeletonCard h={140} />
-                        <SkeletonCard h={140} />
-                        <SkeletonCard h={140} />
+                    <GitHubSkeleton />
+                ) : error && !profile ? (
+                    <div className="gh-error-card">
+                        <AlertCircle size={28} color="#ef4444" style={{ marginBottom: 8 }} />
+                        <p style={{ color: 'var(--text-secondary)' }}>Unable to connect to GitHub right now.</p>
+                        <button className="gh-retry-btn" onClick={loadData}>
+                            <RefreshCw size={13} /> Try Again
+                        </button>
                     </div>
                 ) : (
                     <>
@@ -264,9 +386,10 @@ export default function GitHub() {
                         >
                             <div className="gh-profile-left">
                                 <img
-                                    src={profile?.avatar_url}
-                                    alt={profile?.name}
+                                    src={profile?.avatar_url || `https://github.com/${USERNAME}.png`}
+                                    alt={profile?.name || USERNAME}
                                     className="gh-avatar"
+                                    loading="lazy"
                                 />
                                 <div>
                                     <div className="gh-name">{profile?.name || USERNAME}</div>
@@ -340,7 +463,13 @@ export default function GitHub() {
                                 <div className="gh-section-label"><Zap size={13} /> Recent Activity</div>
                                 <div className="gh-activity-feed">
                                     {events.length > 0
-                                        ? events.map(e => <ActivityItem key={e.id} event={e} />)
+                                        ? events.map(e => (
+                                            <ActivityItem
+                                                key={e.id}
+                                                event={e}
+                                                baseTime={loadedAt}
+                                            />
+                                        ))
                                         : <p className="gh-empty">No recent public activity.</p>
                                     }
                                 </div>

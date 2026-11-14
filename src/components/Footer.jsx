@@ -12,13 +12,6 @@ const social = [
 ];
 
 export default function Footer() {
-    const scrollToSection = (id) => {
-        const element = document.querySelector(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
     return (
         <footer className="footer">
             <div className="container footer-inner">

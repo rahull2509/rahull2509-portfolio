@@ -14,7 +14,7 @@ import {
 import './ProjectDetail.css';
 
 /* ── Excalidraw import panel (admin only) ─────────────────────── */
-function ImportPanel({ project, onSave }) {
+function ImportPanel({ onSave }) {
     const [tab, setTab] = useState('file'); // 'file' | 'json'
     const [status, setStatus] = useState(null);
     const [msg, setMsg] = useState('');
@@ -119,6 +119,7 @@ export default function ProjectDetail({ projectId }) {
     const { projects, updateProject } = useProjects();
     const { isAuthenticated } = useAuth();
     const [fullscreen, setFullscreen] = useState(false);
+    const [isEditingArch, setIsEditingArch] = useState(false);
 
     const project = projects.find(p => p.id === projectId);
 
@@ -137,7 +138,6 @@ export default function ProjectDetail({ projectId }) {
     };
 
     const hasArch = !!project.excalidrawScene;
-    const [isEditingArch, setIsEditingArch] = useState(false);
 
     return (
         <div className="pd-page">
