@@ -8,8 +8,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     LogOut, Plus, Pencil, Trash2, ExternalLink, Github,
-    Layers, Eye, X, LayoutDashboard, Save, Upload, Check, AlertCircle, Link2
+    Layers, Eye, X, LayoutDashboard, Save, Upload, Check, AlertCircle, Link2, BarChart3
 } from 'lucide-react';
+import AnalyticsDashboard from './AnalyticsDashboard';
 import './Admin.css';
 
 const EMPTY_PROJECT = {
@@ -209,6 +210,7 @@ export default function AdminDashboard() {
     const { isAuthenticated, loading: authLoading, logout } = useAuth();
     const { projects, addProject, updateProject, deleteProject } = useProjects();
     const router = useRouter();
+    const [activeView, setActiveView] = useState('analytics'); // 'analytics' | 'projects'
     const [mode, setMode] = useState('list'); // 'list' | 'add' | 'edit'
     const [editProject, setEditProject] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -262,104 +264,126 @@ export default function AdminDashboard() {
             </header>
 
             <main className="admin-main">
-                {/* Stats */}
-                <div className="admin-stats">
-                    {[
-                        { label: 'Total Projects', val: projects.length, icon: '🚀' },
-                        { label: 'Architecture Diagrams', val: projects.filter(p => p.excalidraw).length, icon: '🏗' },
-                        { label: 'Live Projects', val: projects.filter(p => p.live).length, icon: '🌐' },
-                    ].map(s => (
-                        <div key={s.label} className="admin-stat glass">
-                            <span className="as-icon">{s.icon}</span>
-                            <div>
-                                <div className="as-val">{s.val}</div>
-                                <div className="as-label">{s.label}</div>
-                            </div>
-                        </div>
-                    ))}
+                {/* Admin Tab Switcher */}
+                <div className="admin-tab-nav">
+                    <button
+                        className={`admin-nav-tab ${activeView === 'analytics' ? 'active' : ''}`}
+                        onClick={() => setActiveView('analytics')}
+                    >
+                        <BarChart3 size={16} /> Portfolio Analytics
+                    </button>
+                    <button
+                        className={`admin-nav-tab ${activeView === 'projects' ? 'active' : ''}`}
+                        onClick={() => setActiveView('projects')}
+                    >
+                        <Layers size={16} /> Projects Manager ({projects.length})
+                    </button>
                 </div>
 
-                {(mode === 'add' || mode === 'edit') ? (
-                    <ProjectForm
-                        initial={mode === 'edit' ? editProject : EMPTY_PROJECT}
-                        onSave={handleSave}
-                        onCancel={() => { setMode('list'); setEditProject(null); }}
-                    />
+                {activeView === 'analytics' ? (
+                    <AnalyticsDashboard />
                 ) : (
-                    <div className="projects-panel">
-                        <div className="panel-header">
-                            <h2 className="panel-title">Projects</h2>
-                            <button className="btn btn-primary" onClick={() => setMode('add')}>
-                                <Plus size={16} /> Add Project
-                            </button>
+                    <>
+                        {/* Stats */}
+                        <div className="admin-stats">
+                            {[
+                                { label: 'Total Projects', val: projects.length, icon: '🚀' },
+                                { label: 'Architecture Diagrams', val: projects.filter(p => p.excalidraw).length, icon: '🏗' },
+                                { label: 'Live Projects', val: projects.filter(p => p.live).length, icon: '🌐' },
+                            ].map(s => (
+                                <div key={s.label} className="admin-stat glass">
+                                    <span className="as-icon">{s.icon}</span>
+                                    <div>
+                                        <div className="as-val">{s.val}</div>
+                                        <div className="as-label">{s.label}</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
 
-                        {projects.length === 0 ? (
-                            <div className="empty-state glass">
-                                <span className="empty-icon">🚀</span>
-                                <p>No projects yet. Add your first project!</p>
-                                <button className="btn btn-primary" onClick={() => setMode('add')}>
-                                    <Plus size={16} /> Add Project
-                                </button>
-                            </div>
+                        {(mode === 'add' || mode === 'edit') ? (
+                            <ProjectForm
+                                initial={mode === 'edit' ? editProject : EMPTY_PROJECT}
+                                onSave={handleSave}
+                                onCancel={() => { setMode('list'); setEditProject(null); }}
+                            />
                         ) : (
-                            <div className="admin-projects-list">
-                                {projects.map((project, i) => (
-                                    <motion.div
-                                        key={project.id}
-                                        initial={{ opacity: 0, y: 16 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        className="admin-project-row glass"
-                                    >
-                                        <div className="apr-info">
-                                            <div className="apr-title">{project.title}</div>
-                                            <div className="apr-subtitle">{project.subtitle}</div>
-                                            <div className="apr-tech">
-                                                {(project.tech || []).slice(0, 4).map(t => (
-                                                    <span key={t} className="apr-tag">{t}</span>
-                                                ))}
-                                                {(project.tech || []).length > 4 && (
-                                                    <span className="apr-tag">+{project.tech.length - 4}</span>
-                                                )}
-                                            </div>
-                                        </div>
+                            <div className="projects-panel">
+                                <div className="panel-header">
+                                    <h2 className="panel-title">Projects</h2>
+                                    <button className="btn btn-primary" onClick={() => setMode('add')}>
+                                        <Plus size={16} /> Add Project
+                                    </button>
+                                </div>
 
-                                        <div className="apr-badges">
-                                            {project.excalidraw && (
-                                                <span className="apr-badge arch">
-                                                    <Layers size={12} /> Arch
-                                                </span>
-                                            )}
-                                            {project.github && (
-                                                <a href={project.github} target="_blank" rel="noopener noreferrer" className="apr-badge github">
-                                                    <Github size={12} /> GitHub
-                                                </a>
-                                            )}
-                                            {project.live && (
-                                                <a href={project.live} target="_blank" rel="noopener noreferrer" className="apr-badge live">
-                                                    <ExternalLink size={12} /> Live
-                                                </a>
-                                            )}
-                                        </div>
-
-                                        <div className="apr-actions">
-                                            <button className="icon-btn edit" onClick={() => startEdit(project)} title="Edit">
-                                                <Pencil size={15} />
-                                            </button>
-                                            <button
-                                                className="icon-btn delete"
-                                                onClick={() => setDeleteConfirm(project.id)}
-                                                title="Delete"
+                                {projects.length === 0 ? (
+                                    <div className="empty-state glass">
+                                        <span className="empty-icon">🚀</span>
+                                        <p>No projects yet. Add your first project!</p>
+                                        <button className="btn btn-primary" onClick={() => setMode('add')}>
+                                            <Plus size={16} /> Add Project
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="admin-projects-list">
+                                        {projects.map((project, i) => (
+                                            <motion.div
+                                                key={project.id}
+                                                initial={{ opacity: 0, y: 16 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: i * 0.05 }}
+                                                className="admin-project-row glass"
                                             >
-                                                <Trash2 size={15} />
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                                <div className="apr-info">
+                                                    <div className="apr-title">{project.title}</div>
+                                                    <div className="apr-subtitle">{project.subtitle}</div>
+                                                    <div className="apr-tech">
+                                                        {(project.tech || []).slice(0, 4).map(t => (
+                                                            <span key={t} className="apr-tag">{t}</span>
+                                                        ))}
+                                                        {(project.tech || []).length > 4 && (
+                                                            <span className="apr-tag">+{project.tech.length - 4}</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="apr-badges">
+                                                    {project.excalidraw && (
+                                                        <span className="apr-badge arch">
+                                                            <Layers size={12} /> Arch
+                                                        </span>
+                                                    )}
+                                                    {project.github && (
+                                                        <a href={project.github} target="_blank" rel="noopener noreferrer" className="apr-badge github">
+                                                            <Github size={12} /> GitHub
+                                                        </a>
+                                                    )}
+                                                    {project.live && (
+                                                        <a href={project.live} target="_blank" rel="noopener noreferrer" className="apr-badge live">
+                                                            <ExternalLink size={12} /> Live
+                                                        </a>
+                                                    )}
+                                                </div>
+
+                                                <div className="apr-actions">
+                                                    <button className="icon-btn edit" onClick={() => startEdit(project)} title="Edit">
+                                                        <Pencil size={15} />
+                                                    </button>
+                                                    <button
+                                                        className="icon-btn delete"
+                                                        onClick={() => setDeleteConfirm(project.id)}
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
-                    </div>
+                    </>
                 )}
             </main>
 

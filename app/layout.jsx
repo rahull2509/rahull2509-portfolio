@@ -1,7 +1,9 @@
+import { Suspense } from 'react';
 import { Poppins, Inter } from 'next/font/google';
 import Providers from '../src/providers/Providers';
 import SmoothScroller from '../src/components/SmoothScroller';
 import HydrationGate from '../src/components/HydrationGate';
+import AnalyticsTracker from '../src/components/AnalyticsTracker';
 import './globals.css';
 
 const poppins = Poppins({
@@ -32,6 +34,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
       <body>
         <HydrationGate />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
         <SmoothScroller>
           <Providers>{children}</Providers>
         </SmoothScroller>

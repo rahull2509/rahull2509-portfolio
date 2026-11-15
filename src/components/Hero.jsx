@@ -5,6 +5,39 @@ import Image from 'next/image';
 import './Hero.css';
 
 export default function Hero() {
+    const handleResumeClick = () => {
+        try {
+            let visitorId = null;
+            try {
+                visitorId = localStorage.getItem('va_client_id');
+            } catch {
+                // Ignore localStorage restrictions
+            }
+
+            const payload = JSON.stringify({
+                event_type: 'resume_click',
+                page_path: '/',
+                referrer: typeof document !== 'undefined' ? document.referrer : '',
+                screen_width: typeof window !== 'undefined' ? window.innerWidth : null,
+                visitor_id: visitorId,
+            });
+
+            if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+                const blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon('/api/analytics/track', blob);
+            } else {
+                fetch('/api/analytics/track', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload,
+                    keepalive: true,
+                }).catch(() => {});
+            }
+        } catch {
+            // Never block user experience
+        }
+    };
+
     return (
         <section className="hero">
             <div className="hero-bg-pattern"></div>
@@ -37,11 +70,12 @@ export default function Hero() {
 
                         <div className="hero-actions">
                             <a
-                                href="/Resume.pdf"
+                                href="/api/analytics/resume-download"
+                                onClick={handleResumeClick}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-primary"
-                                download
+                                download="Rahul_Gangwar_Resume.pdf"
                             >
                                 VIEW RESUME
                             </a>
