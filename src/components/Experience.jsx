@@ -6,10 +6,23 @@ import './Experience.css';
 
 const experiences = [
     {
+        company: 'Real IT Solutions',
+        role: 'Trainee Development Engineer',
+        location: 'Remote · Pune, Maharashtra, India',
+        period: 'Nov 2026 – Present',
+        color: 'emerald',
+        bullets: [
+            'Selected as a Trainee Development Engineer to work on client projects involving AI, DevOps tools, and application development.',
+            'Working with technologies including React.js, Python frameworks, Generative AI, and Large Language Models (LLMs).',
+            'Contributing to ongoing software development projects under the guidance of project managers.',
+        ],
+        tags: ['React.js', 'Python', 'Generative AI', 'LLMs', 'DevOps', 'Application Development'],
+    },
+    {
         company: 'SwitchYourVendor',
         role: 'Full Stack Developer',
         location: 'Remote · Gurugram, Haryana, India',
-        period: 'Jun 2026 – Sep 2026',
+        period: 'Jun 2026 – Oct 2026',
         color: 'cyan',
         bullets: [
             'Built MarketPulse, a full-stack SaaS platform for real-time market analytics, stock screening, historical analysis, and trading insights.',
@@ -39,6 +52,7 @@ const experiences = [
 ];
 
 const colorMap = {
+    emerald: { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.2)', dot: '#10b981' },
     purple: { bg: 'rgba(139,92,246,0.08)', border: 'rgba(139,92,246,0.2)', dot: '#8b5cf6' },
     cyan: { bg: 'rgba(6,182,212,0.08)', border: 'rgba(6,182,212,0.2)', dot: '#06b6d4' },
 };
@@ -65,7 +79,7 @@ export default function Experience() {
 
                 <div className="exp-timeline">
                     {experiences.map((exp, i) => {
-                        const c = colorMap[exp.color];
+                        const c = colorMap[exp.color] || colorMap.emerald;
                         return (
                             <motion.div
                                 key={exp.company}
